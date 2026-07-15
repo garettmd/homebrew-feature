@@ -1,0 +1,13 @@
+name: PR Title Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    uses: AiAutomotive/shared-workflows/.github/workflows/pr-title-check.yml@main
