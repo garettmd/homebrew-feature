@@ -1,0 +1,38 @@
+{
+  "non_root_user": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+      "ghcr.io/devcontainers/features/common-utils:2": {
+        "installZsh": false,
+        "username": "brewer"
+      },
+      "homebrew": {}
+    },
+    "remoteUser": "brewer"
+  },
+  "numeric_remote_user": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+      "homebrew": {}
+    },
+    "remoteUser": "1000"
+  },
+  "brewfile_enabled": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "initializeCommand": "printf 'brew \"hello\"\\n' > Brewfile",
+    "features": {
+      "homebrew": {
+        "installBrewfile": true
+      }
+    }
+  },
+  "brewfile_disabled": {
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "initializeCommand": "printf 'brew \"hello\"\\n' > Brewfile",
+    "features": {
+      "homebrew": {
+        "installBrewfile": false
+      }
+    }
+  }
+}

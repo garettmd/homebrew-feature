@@ -1,0 +1,34 @@
+{
+  "id": "homebrew",
+  "version": "1.0.0",
+  "name": "Homebrew",
+  "description": "Installs Homebrew on Linux and optionally applies a workspace-root Brewfile.",
+  "keywords": [
+    "homebrew",
+    "brew",
+    "brewfile",
+    "package manager"
+  ],
+  "options": {
+    "installBrewfile": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install dependencies from Brewfile in the workspace root after the workspace is mounted."
+    },
+    "noUpgrade": {
+      "type": "boolean",
+      "default": true,
+      "description": "Pass --no-upgrade to brew bundle install."
+    }
+  },
+  "containerEnv": {
+    "PATH": "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}",
+    "HOMEBREW_NO_ANALYTICS": "1"
+  },
+  "updateContentCommand": {
+    "homebrew-bundle": "/usr/local/share/devcontainer-features/homebrew/run-bundle.sh"
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
