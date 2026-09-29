@@ -1,78 +1,42 @@
-# Homebrew
 
-Installs [Homebrew](https://brew.sh/) into its supported Linux prefix, `/home/linuxbrew/.linuxbrew`.
+# Homebrew (homebrew)
 
-The Feature can optionally apply a `Brewfile` from the root of the mounted workspace. This makes project-level developer tools declarative without requiring a separate Dev Container Feature for every formula.
+Installs Homebrew on Linux and optionally applies a workspace-root Brewfile.
 
-## Usage
+## Example Usage
 
-Install Homebrew only:
-
-```jsonc
-{
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "features": {
-    "ghcr.io/example/devcontainer-features/homebrew:1": {}
-  }
+```json
+"features": {
+    "ghcr.io/garettmd/homebrew-feature/homebrew:1": {}
 }
 ```
-
-Install Homebrew and apply the project `Brewfile`:
-
-```jsonc
-{
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "features": {
-    "ghcr.io/example/devcontainer-features/homebrew:1": {
-      "installBrewfile": true
-    }
-  }
-}
-```
-
-With `installBrewfile` enabled, this file must exist at `Brewfile` in the workspace root:
-
-```ruby
-brew "jq"
-brew "shellcheck"
-```
-
-Replace the example Feature namespace with the GHCR namespace where this collection is published.
 
 ## Options
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `installBrewfile` | boolean | `false` | Run `brew bundle install` against `Brewfile` in the workspace root after source is mounted. |
-| `noUpgrade` | boolean | `true` | Pass `--no-upgrade` to `brew bundle install`. |
+| Options Id | Description | Type | Default Value |
+|-----|-----|-----|-----|
+| installBrewfile | Install dependencies from Brewfile in the workspace root after the workspace is mounted. | boolean | false |
+| noUpgrade | Pass --no-upgrade to brew bundle install. | boolean | true |
 
-`noUpgrade` prevents Bundle from proactively upgrading already installed formulae. It does not pin versions and does not prevent dependency upgrades required by a new installation.
+# Brewfile behavior
 
-## Ownership
+When `installBrewfile` is enabled, `Brewfile` must exist in the workspace root. The Feature applies it with `updateContentCommand` after source is mounted because project files are unavailable while Features are installed into the image.
 
-Homebrew is designed as a single-user installation:
+This means container creation needs network access when dependencies are missing, and Brewfile dependencies are not part of the image layer produced by Feature installation. A Brewfile is executable Ruby; enable this option only for repositories you trust.
 
-- If the container has a non-root remote user, that user owns and operates Homebrew.
-- If the effective user is root or missing, the Feature creates a non-root `linuxbrew` user as a fallback because Homebrew does not run as root.
+`noUpgrade` prevents Bundle from proactively upgrading already installed formulae. It does not pin versions or prevent dependency upgrades required by a new installation. Homebrew is a rolling-release package manager and Brewfiles do not have lockfiles.
 
-When the fallback user is used, prefer taps and formulae. User-scoped Brewfile entries such as `vscode`, `cargo`, `go`, or `uv` target the fallback account rather than the root remote user.
+# Ownership
 
-## Supported containers
+Homebrew is designed as a single-user installation. The container's non-root remote user owns Homebrew. If the effective user is root or absent, the Feature creates a non-root `linuxbrew` fallback because Homebrew cannot run as root.
 
-- Debian and Ubuntu containers using glibc
-- amd64 and arm64 architectures
+With the fallback user, prefer taps and formulae. User-scoped entries such as `vscode`, `cargo`, `go`, or `uv` target the fallback account rather than the root remote user.
 
-Alpine is not supported because it uses musl libc. Homebrew requires glibc. macOS-only Brewfile entries such as `mas`, GUI casks, and some services are not suitable for Linux dev containers.
+# Compatibility
 
-## Lifecycle and trust
+This Feature supports Debian and Ubuntu containers using glibc on amd64 and arm64. Alpine uses musl and is not supported. macOS-only Brewfile entries such as `mas`, GUI casks, and some services are not suitable for Linux dev containers.
 
-The Feature itself is installed while the container image is built. A project file is not available at that stage, so the optional Bundle step runs through `updateContentCommand` after the workspace is mounted.
 
-Consequences:
+---
 
-- Container creation requires network access when Bundle needs to install dependencies.
-- Brewfile dependencies are not stored in the image layer created by Feature installation.
-- Re-running the lifecycle command is safe; `brew bundle install` is declarative and idempotent.
-- A Brewfile is executable Ruby. Enabling this option means trusting the checked-out repository to execute code as the Homebrew owner.
-
-Homebrew is a rolling-release package manager. Brewfiles do not have lockfiles and cannot generally select arbitrary historical versions. Use versioned formulae where Homebrew provides them, or maintain a tap if stronger version control is required.
+_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/garettmd/homebrew-feature/blob/main/src/homebrew/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
